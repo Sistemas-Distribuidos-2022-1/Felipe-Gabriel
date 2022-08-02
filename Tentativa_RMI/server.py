@@ -25,3 +25,5 @@ class funcaoremota(object):
 
     print("Escutando...")
     daemon.requestLoop()
+
+     
