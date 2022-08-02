@@ -1,18 +1,18 @@
 import zmq
 
 context = zmq.Context()
-s = context.socket(zmq.SUB) # create a subscriber socket
-p = "tcp://192.168.40.47:5555"  # how and where to communicate
-s.connect(p) # connect to the server
-s.setsockopt_string(zmq.SUBSCRIBE, "REAJUSTE") # subscribe to TIME messages
+socket = context.socket(zmq.SUB) # create a subscriber socket
+p = "tcp://localhost:1234"  # how and where to communicate
+socket.connect(p) # connect to the server
+socket.subscribe('REAJUSTESALARIO')
 
-for i in range(10): # Five iterations
-	reajuste = s.recv().split() # receive a message
-	salario = int(reajuste[2])
-
-	if (reajuste[3] == 'operador'):
-		salario *= 1.2
+for _ in range(10): # 10 iterations
+	topic = socket.recv_string()
+	lst = socket.recv_json()
+	
+	if lst[1] == 'operador':
+		lst[2] *= 1.2
 	else:
-		salario *= 1.18
-
-	print(f'Nome: {reajuste[1]}\n Salario: {salario}\n Cargo: {reajuste[3]}\n')
+		lst[2] *= 1.18
+	
+	print(f'{topic} - {lst[0]} - salário reajustado: {round(lst[2],3)}')
